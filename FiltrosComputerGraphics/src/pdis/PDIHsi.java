@@ -43,8 +43,8 @@ public class PDIHsi extends JComponent implements ImageInterface {
 		
         double tempe = 0;
         
-        for (int i = 0; i < largura; i++) {
-            for (int j = 0; j < altura; j++) {
+        for (int i = 0; i < img.getWidth(); i++) {
+            for (int j = 0; j < img.getHeight(); j++) {
                 Color temp = new Color(img.getRGB(i, j));
                 R = temp.getRed();
                 G = temp.getGreen();
