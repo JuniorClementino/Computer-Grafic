@@ -36,7 +36,7 @@ public class Menu extends JMenuBar {
 		this.mainFrame = mainFrame;
 		this.add(newMenu(1, "Arquivo"));
 		this.add(newMenu(2, "Processamento"));
-		this.add(newMenu(3, "k-Means não-supervisionado"));
+		
 	}
 	
 	public JMenu newMenu(int pos, String titulo) {
@@ -51,23 +51,18 @@ public class Menu extends JMenuBar {
 			menu.add(itemFechar());
 			break;
 		case 2:
-			menu.add(itemInverso());
+			
                         menu.add(itemTrocaCorYCbCr());
                         menu.add(itemMediaCinza());
+                        menu.add(itemMediana3x3());
                         menu.add(itemHsi());
                         menu.add(itemOtsu());
-                        menu.add(itemFiltragem());
+                        menu.add(itemSuavizacaoMedia());
                         menu.add(itemLimiarizar());
+                        menu.add(itemLaplace());
 			menu.setEnabled(false);
 			break;
-		case 3:
-			menu.add(newSubMenu(31, "Classes: 2"));
-			menu.add(newSubMenu(32, "Espaço de Cores"));
-			menu.add(newSubMenu(33, "Características"));
-			//menu.add(itemKmeans());
-			menu.add(itemKmeansSemiSup());
-			menu.setEnabled(false);
-			break;
+
 		}
 		
 		return menu;
@@ -87,7 +82,7 @@ public class Menu extends JMenuBar {
 			menu.add(newSubMenu(323, "HSV"));
                         menu.add(newSubMenu(324, "HSI"));
                         menu.add(newSubMenu(325, "OTSU"));
-                        menu.add(newSubMenu(325, "Filtragem"));
+                        menu.add(newSubMenu(325, "SuavizacaoMedia"));
 			//addRadioGroupColorSpaces(menu, 0);
 			break;
 			case 321:
@@ -327,8 +322,8 @@ public class Menu extends JMenuBar {
 		return item;
             
         }
-        public JMenuItem itemFiltragem(){
-            JMenuItem item =new JMenuItem("Filtragem");
+        public JMenuItem itemSuavizacaoMedia(){
+            JMenuItem item =new JMenuItem("SuavizaçaoMedia");
             item.addActionListener(new ActionListener() {
 			
 			@Override
@@ -367,9 +362,51 @@ public class Menu extends JMenuBar {
 		return item;
             
         }
-        public JMenuItem itemInverso() {
+        public JMenuItem itemMediana3x3(){
+            JMenuItem item =new JMenuItem("Mediana");
+            item.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					BufferedImage imagem = mainFrame.getSelected().getImage();
+					JImageWindow imgWindow = new JImageWindow(imagem, Tipo.MEDIANA);
+					imgWindow.addInternalFrameListener(new InternalFrameAdapter() {
+						public void internalFrameActivated(javax.swing.event.InternalFrameEvent e) {
+							mainFrame.setSelected((JImageWindow) e.getSource());
+							alterarMenu(true);
+						};
+						
+						public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+							JImageWindow closed = (JImageWindow) e.getSource();
+							mainFrame.getDesktopPane().remove(closed);
+							if (mainFrame.getDesktopPane().getComponentCount() == 0)
+								alterarMenu(false);
+						};
+					});
+					
+					imgWindow.setVisible(true);
+					imgWindow.setLocation(
+							mainFrame.getSelected().getLocation().x + 50, 
+							mainFrame.getSelected().getLocation().y + 50);
+					
+					mainFrame.getDesktopPane().add(imgWindow);
+					imgWindow.setSelected(true);
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(mainFrame, "Falha ao carregar a imagem");
+					e1.printStackTrace();
+				}
+			}
+		});
 		
-		JMenuItem item = new JMenuItem("Inverso ");
+		return item;
+            
+        }
+        
+        
+         public JMenuItem itemLaplace() {
+		
+		JMenuItem item = new JMenuItem("LAPLACE ");
 		
 		item.addActionListener(new ActionListener() {
 			
@@ -377,7 +414,7 @@ public class Menu extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					BufferedImage imagem = mainFrame.getSelected().getImage();
-					JImageWindow imgWindow = new JImageWindow(imagem, Tipo.INVERSO);
+					JImageWindow imgWindow = new JImageWindow(imagem, Tipo.LAPLACE);
 					imgWindow.addInternalFrameListener(new InternalFrameAdapter() {
 						public void internalFrameActivated(javax.swing.event.InternalFrameEvent e) {
 							mainFrame.setSelected((JImageWindow) e.getSource());
@@ -462,7 +499,7 @@ public class Menu extends JMenuBar {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					BufferedImage imagem = mainFrame.getSelected().getImage();
-					JImageWindow imgWindow = new JImageWindow(imagem, Tipo.LIMIARIZAR);
+					JImageWindow imgWindow = new JImageWindow(imagem, Tipo.LIMIARIZACAO);
 					imgWindow.addInternalFrameListener(new InternalFrameAdapter() {
 						public void internalFrameActivated(javax.swing.event.InternalFrameEvent e) {
 							mainFrame.setSelected((JImageWindow) e.getSource());
@@ -660,26 +697,7 @@ public class Menu extends JMenuBar {
 		return item;
 	}
 	
-	public JMenuItem itemKmeansSemiSup() {
-		JMenuItem item = new JMenuItem("K-Means Semi-Supervisionado");
-		
-		item.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				//new Dialog(mainFrame,"Hello",true);
-				if (pnlKMeans != null)
-					return;
-				
-				pnlKMeans = new KMeansSemiSup(mainFrame.getSelected().getImage(), Menu.this, mainFrame);
-				
-				mainFrame.add(pnlKMeans, BorderLayout.EAST);
-				mainFrame.validate();
-			}
-		});
-		
-		return item;
-	}
+	
 	
 	public void closeKmeansSemiSup() {
 		mainFrame.remove(pnlKMeans);

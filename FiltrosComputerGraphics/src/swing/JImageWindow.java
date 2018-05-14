@@ -12,12 +12,15 @@ import interfaces.ImageInterface;
 import java.io.IOException;
 import pdis.PDIClasse;
 import pdis.PDICorYCbCr;
-import pdis.PDIInverso;
+
 import pdis.PDIKmeans;
 import pdis.PDIKmeansSemiSup;
 import pdis.PDIBinariza;
-import pdis.PDIFiltragem;
+import pdis.PDIFiltroMediana3x3;
+import pdis.PDISuavizaçãoMedia;
 import pdis.PDIHsi;
+import pdis.PDILaplaciano;
+import pdis.PDILimiarizacao;
 import pdis.PDIMediaEscalaCinza;
 import pdis.PDIOtsu;
 
@@ -25,7 +28,7 @@ import pdis.PDIOtsu;
 public class JImageWindow extends JInternalFrame {
 	enum Tipo {
 		NORMAL, 
-		INVERSO,MEDIACINZA, TROCACOR,HSI,OTSU, FILTRAGEM,KMEANS, KMEANS_SS, CLASSE, LIMIARIZAR
+		LIMIARIZACAO,MEDIACINZA, TROCACOR,HSI,OTSU, FILTRAGEM, MEDIANA,LAPLACE, KMEANS, KMEANS_SS, CLASSE, LIMIARIZAR
 	}
 	
 	private ImageInterface canvas;
@@ -46,8 +49,8 @@ public class JImageWindow extends JInternalFrame {
 		case NORMAL:
 			canvas = new ImageCanvas(img);
 			break;
-		case INVERSO:
-			canvas = new PDIInverso(img);
+		case LIMIARIZACAO:
+			canvas = new PDILimiarizacao(img);
 			break;
                 case MEDIACINZA:
 			canvas = new PDIMediaEscalaCinza(img);
@@ -65,7 +68,13 @@ public class JImageWindow extends JInternalFrame {
                         canvas = new PDIOtsu(img);
                         break;
                 case FILTRAGEM:
-                        canvas = new PDIFiltragem(img);
+                        canvas = new PDISuavizaçãoMedia(img);
+                        break;
+                case MEDIANA:
+                        canvas = new PDIFiltroMediana3x3(img);
+                        break;
+                case LAPLACE:
+                        canvas = new PDILaplaciano(img);
                         break;
                 case LIMIARIZAR:
                         canvas = new PDIBinariza(img);
